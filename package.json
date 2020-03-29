@@ -1,0 +1,147 @@
+{
+  "name": "tutelary",
+  "version": "0.1.0",
+  "description": "The Discord Guardian",
+  "author": "Scott <scott.au@protonmail.com>",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "scripts": {
+    "start": "npm run prod",
+    "build": "npm-run-all clean transpile",
+    "server": "node ./dist/index.js",
+    "dev": "cross-env NODE_ENV=development npm-run-all build server",
+    "prod": "cross-env NODE_ENV=production npm-run-all build server",
+    "transpile": "babel ./source --out-dir dist",
+    "clean": "rimraf dist",
+    "watch:dev": "nodemon",
+    "test": "jest",
+    "scrape": "node dates.js"
+  },
+  "dependencies": {
+    "@yarnpkg/pnpify": "^2.0.0-rc.19",
+    "chalk": "^3.0.0",
+    "cheerio": "^1.0.0-rc.3",
+    "chrono-node": "^1.4.4",
+    "cron": "^1.8.2",
+    "discord-akairo": "^8.0.0",
+    "discord.js": "^12.0.2",
+    "dotenv": "^8.2.0",
+    "firebase-admin": "^8.10.0",
+    "firebase-functions": "^3.5.0",
+    "luxon": "^1.22.2",
+    "node-fetch": "^2.6.0",
+    "regenerator-runtime": "^0.13.5",
+    "sequelize": "^5.21.5",
+    "sqlite": "^3.0.6",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^4.4.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-decorators": "^7.8.3",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-flow": "^7.9.0",
+    "babel-eslint": "^10.1.0",
+    "babel-plugin-inline-json-import": "^0.3.2",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "cross-env": "^7.0.2",
+    "eslint": "^6.8.0",
+    "nodemon": "^2.0.2",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2"
+  },
+  "babel": {
+    "sourceType": "module",
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-flow"
+    ],
+    "plugins": [
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ],
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": true
+        }
+      ],
+      [
+        "inline-json-import",
+        {}
+      ],
+      [
+        "module-resolver",
+        {
+          "root": [
+            "./source"
+          ]
+        }
+      ]
+    ]
+  },
+  "nodemonConfig": {
+    "exec": "yarn run dev",
+    "watch": [
+      "source/*"
+    ],
+    "ignore": [
+      "**/__tests__/**",
+      "*.test.js",
+      "*.spec.js"
+    ]
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "parser": "babel-eslint",
+      "sourceType": "module"
+    },
+    "env": {
+      "browser": false,
+      "node": true
+    },
+    "rules": {
+      "no-param-reassign": "off",
+      "import/first": "off",
+      "import/named": "error",
+      "import/namespace": "error",
+      "import/default": "error",
+      "import/export": "error",
+      "import/extensions": "off",
+      "import/no-unresolved": "off",
+      "import/no-extraneous-dependencies": "off",
+      "import/prefer-default-export": "off",
+      "prefer-promise-reject-errors": "off",
+      "lines-between-class-members": "off",
+      "no-console": "off",
+      "no-debugger": "off",
+      "max-len": [
+        "error",
+        {
+          "code": 120
+        }
+      ],
+      "linebreak-style": [
+        0,
+        "windows"
+      ],
+      "no-underscore-dangle": [
+        0
+      ],
+      "class-methods-use-this": [
+        0
+      ],
+      "no-shadow": [
+        0
+      ]
+    }
+  }
+}
