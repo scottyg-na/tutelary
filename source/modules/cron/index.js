@@ -1,7 +1,7 @@
 import { AkairoModule, AkairoError } from 'discord-akairo';
 import { CronJob } from 'cron';
 import Constants from 'constants';
-import CronOptions from 'models/cron-options';
+import CronOptions from 'modules/cron/models/options';
 
 export default class Cron extends AkairoModule {
 

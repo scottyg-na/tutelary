@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo';
 import Cron from 'modules/cron';
 import { getForToday, getEmbeddedMessage } from 'util/just-for-today';
-import CronOptions from '../models/cron-options';
+import CronOptions from 'modules/cron/models/options';
 import { CronJob } from 'cron';
 
 export default class JustForTodayCron extends Cron {

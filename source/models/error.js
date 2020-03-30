@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo';
 import { Message } from 'discord.js';
 
-export default class BotError {
+export default class TutelaryError {
 
     message: Message;
     command: Command;

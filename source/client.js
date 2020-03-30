@@ -1,26 +1,27 @@
 import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler } from 'discord-akairo';
 import { Collection, Message, StringResolvable } from 'discord.js';
 import { firestore } from './db';
-import CronModule from 'modules/cron';
 import CronHandler from 'modules/cron/handler';
 import Logger from 'util/logger';
-import BotError from 'models/bot-error';
+import TutelaryError from 'models/error';
+import path from 'path';
 
 export default class TutelaryClient extends AkairoClient {
 
-    Error: BotError = BotError;
+    Error: TutelaryError = TutelaryError;
     db: Object = firestore;
     logger: Logger = new Logger().logger
     config: Object = {};
     handlers: Object = {
         command: new CommandHandler(this, {
             allowMention: true,
-            automateCategories: true,
+            automateCategories: false,
             commandUtil: true,
             blockBots: true,
             blockClient: true,
             prefix: ['?', 'tute '],
-            directory: __dirname + '/commands/',
+            directory: __dirname,
+            loadFilter: (path) => TutelaryClient.filterFilesForType('commands', path),
             argumentDefaults: {
                 prompt: {
                     cancel: (msg: Message) => `${msg.author}, command cancelled.`,
@@ -35,16 +36,18 @@ export default class TutelaryClient extends AkairoClient {
         }),
         inhibitor: new InhibitorHandler(this, {
             automateCategories: true,
-            directory: __dirname + '/inhibitors/'
+            directory: __dirname,
+            loadFilter: (path) => TutelaryClient.filterFilesForType('inhibitors', path),
         }),
         listener: new ListenerHandler(this, {
             automateCategories: true,
-            directory: __dirname + '/listeners/'
+            directory: __dirname,
+            loadFilter: (path) => TutelaryClient.filterFilesForType('listeners', path),
         }),
         cron: new CronHandler(this, {
             automateCategories: true,
-            directory: __dirname + '/cron/',
-            classToHandle: CronModule
+            directory: __dirname,
+            loadFilter: (path) => TutelaryClient.filterFilesForType('crons', path),
         })
     }
 
@@ -88,6 +91,17 @@ export default class TutelaryClient extends AkairoClient {
         } catch(e) {
             console.log('err', e);
         }
+    }
+
+    static filterFilesForType(type: String, filename: String) {
+        const match = (
+            filename.includes(`/${type}/`) || filename.includes(`\\${type}\\`)
+        ) &&
+        !(
+            filename.includes(`/modules/`) || filename.includes('\\modules\\')
+        );
+
+        return match;
     }
 
 }
