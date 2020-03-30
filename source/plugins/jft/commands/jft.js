@@ -1,9 +1,10 @@
 import { Command } from 'discord-akairo';
-import { getForToday, getEmbeddedMessage } from 'util/just-for-today';
+import { getForToday, getEmbeddedMessage } from '../util';
 
 export default class JustForTodayCommand extends Command {
     constructor() {
         super('jft', {
+            category: 'general',
             aliases: ['jft', 'just-for-today'],
             description: {
                 content: 'Sends you todays Just For Today reading.',

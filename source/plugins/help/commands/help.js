@@ -5,6 +5,7 @@ import toTitleCase from 'util/string/permissionsToTitleCase';
 export default class extends Command {
     constructor() {
         super('help', {
+            category: ['help'],
             aliases: ['help', 'commands'],
             description: {
                 content: 'Displays available commands or command information',
@@ -74,6 +75,7 @@ export default class extends Command {
 
             const title = {
                 admin: 'Administration',
+                help: 'Help',
                 general: 'General'
             }[category];
 

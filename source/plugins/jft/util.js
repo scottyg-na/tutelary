@@ -1,19 +1,20 @@
 import { MessageEmbed } from 'discord.js';
 import { DateTime } from 'luxon';
-import getBotDateTime from 'util/date/getBotDateTime'
-import jft from 'static/jft.json';
+import Constants from 'constants';
+import getBotDateTime from 'util/date/getBotDateTime';
+import jft from './static/just-for-today.json';
 
-export function getForDate(date: DateTime = DateTime.local()) {
+export const getForDate = (date: DateTime = DateTime.local()) => {
     return jft[getBotDateTime().toFormat('M-d')];
 }
 
-export function getForToday() {
+export const getForToday = () => {
     return getForDate();
 }
 
 export function getEmbeddedMessage(jft = {}) {
     return new MessageEmbed()
-        .setColor('#0099ff')
+        .setColor(Constants.Colors.BLUE)
         .setAuthor(`${jft.date}`)
         .setTitle(`${jft.vision}`)
         .setDescription([

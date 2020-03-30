@@ -1,11 +1,12 @@
 import { Command, Message } from 'discord-akairo';
 import { DateTime } from 'luxon';
 import getBotDateTime from 'util/date/getBotDateTime';
-import { getAllMeetingsForDate } from 'util/meetings';
+import { getAllMeetingsForDate } from '../util';
 
 export default class MeetingsCommand extends Command {
     constructor() {
         super('meetings', {
+            category: 'general',
             aliases: ['meetings', 'meeting', 'meet'],
             description: {
                 content: 'Sends you a list of meetings.',
@@ -30,15 +31,6 @@ export default class MeetingsCommand extends Command {
         // if (!action) return this.showMeetingsForDate(message);
     }
 
-    getDatesForTz(start: DateTime, [hours, minutes]: Array) {
-        const end = start.plus({ hours, minutes });
-        return {
-            start: start.toFormat('h:mma'),
-            end: end.toFormat('h:mma'),
-            offset: start.offsetNameShort,
-        }
-    }
-
     async showMeetingsForDate(message: Message, date: DateTime = getBotDateTime()) {
         const meetings = await getAllMeetingsForDate(date);
         const embed = this.client.util.embed()
@@ -55,9 +47,9 @@ export default class MeetingsCommand extends Command {
             const startUtc = date.set({ hour: startHour, minute: startMinute });
             const start = startUtc.plus({ minutes: offset });
 
-            const startVic = this.getDatesForTz(start, [durationHour, durationMinute]);
-            const startNz = this.getDatesForTz(start.setZone('Pacific/Auckland'), [durationHour, durationMinute]);
-            const startWa = this.getDatesForTz(start.setZone('Australia/Perth'), [durationHour, durationMinute]);
+            const startVic = MeetingsCommand.getDatesForTz(start, [durationHour, durationMinute]);
+            const startNz = MeetingsCommand.getDatesForTz(start.setZone('Pacific/Auckland'), [durationHour, durationMinute]);
+            const startWa = MeetingsCommand.getDatesForTz(start.setZone('Australia/Perth'), [durationHour, durationMinute]);
 
             embed.addField(
                 `**${meeting.meeting_name}**`,
@@ -67,8 +59,17 @@ export default class MeetingsCommand extends Command {
                 ]
             )
 
-        })
+        });
 
         message.channel.send(embed);
+    }
+
+    static getDatesForTz(start: DateTime, [hours, minutes]: Array) {
+        const end = start.plus({ hours, minutes });
+        return {
+            start: start.toFormat('h:mma'),
+            end: end.toFormat('h:mma'),
+            offset: start.offsetNameShort,
+        }
     }
 }
