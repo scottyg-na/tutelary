@@ -3,7 +3,7 @@ import { CronJob } from 'cron';
 import Constants from 'constants';
 import CronOptions from 'modules/cron/models/options';
 
-export default class Cron extends AkairoModule {
+export default class CronModule extends AkairoModule {
 
     task: CronJob;
     options: CronOptions = new CronOptions();
@@ -43,15 +43,17 @@ export default class Cron extends AkairoModule {
     }
 
     start() {
-        throw new AkairoError('Not implemented!');
+        this.task.start();
     }
 
     stop() {
-        throw new AkairoError('Not implemented!');
+        this.task.stop();
     }
 
     destroy() {
-        throw new AkairoError('Not implemented!');
+        this.task.stop();
+        delete this.task;
+        this.handler.remove(this.id);
     }
 
 }

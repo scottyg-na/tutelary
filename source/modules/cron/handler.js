@@ -1,17 +1,17 @@
 import { AkairoHandler } from 'discord-akairo';
-import Cron from './index';
+import CronModule from './index';
 import Constants from 'constants'
 
 export default class CronHandler extends AkairoHandler {
 
     constructor(client, {
         directory,
-        classToHandle = Cron,
+        classToHandle = CronModule,
         loadFilter,
         automateCategories,
     }) {
-        if (!(classToHandle.prototype instanceof Cron || classToHandle === Cron)) {
-            throw new AkairoError('INVALID_CLASS_TO_HANDLE', options.classToHandle.name, Cron.name);
+        if (!(classToHandle.prototype instanceof CronModule || classToHandle === CronModule)) {
+            throw new AkairoError('INVALID_CLASS_TO_HANDLE', options.classToHandle.name, CronModule.name);
         }
 
         super(client, {
@@ -20,6 +20,8 @@ export default class CronHandler extends AkairoHandler {
             loadFilter,
             automateCategories,
         });
+
+        this.on('load', module => module.create());
     }
 }
 

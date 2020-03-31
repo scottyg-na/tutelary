@@ -5,6 +5,6 @@ export default class TutelaryServer {
     id: string;
     name: string;
     since: Date;
-    owners: Array|String;
+    owners: Array | String;
     region: String;
 }
