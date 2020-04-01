@@ -4,18 +4,20 @@ import { getForToday, getEmbeddedMessage } from '../util';
 import CronOptions from 'modules/cron/models/options';
 import { CronJob } from 'cron';
 
-export default class JustForTodayCron extends CronModule {
+export default class JftAutomateCron extends CronModule {
 
     channels: string[] = [];
 
     constructor() {
-        super('jft', new CronOptions({
-            name: 'Just For Today',
-            time: '0 0 7 * * *'
+        super('plugins:jft:cron:automate', new CronOptions({
+            name: 'JFT - Automate',
+            time: '0 0 7 * * *',
+            runOnInit: false,
         }));
     }
 
-    init() {
+    onReady() {
+        super.onReady();
         this.channels = this.client.channels.cache.filter(channel => channel.type === 'text' && channel.name.includes('just-for-today-daily'));
     };
 

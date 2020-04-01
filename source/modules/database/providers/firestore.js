@@ -5,6 +5,8 @@ import DatabaseProvider from "../models/provider";
 
 export default class FirestoreDatabaseProvider extends DatabaseProvider {
 
+    instance: any;
+
     constructor(options) {
         super();
 

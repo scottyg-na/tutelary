@@ -13,19 +13,8 @@ export default class CronModule extends AkairoModule {
         this.options = options;
     }
 
-    create() {
+    onReady() {
         try {
-
-            if (typeof this.init === 'function') this.init();
-
-            this.task = new CronJob(
-                this.options.time,
-                () => this.exec(),
-                () => { },
-                this.options.runOnInit,
-                process.env.BOT_TIMEZONE,
-            );
-
             this.handler.emit(
                 Constants.Events.CRON_CREATED,
                 this.options.name,
@@ -33,6 +22,19 @@ export default class CronModule extends AkairoModule {
                 this.options.time
             );
 
+            this.task = new CronJob(
+                this.options.time,
+                () => {
+                    this.handler.emit(Constants.Events.CRON_STARTED, this.options.name, this.id);
+                    this.exec();
+                    this.handler.emit(Constants.Events.CRON_FINISHED, this.options.name, this.id);
+                },
+                () => { },
+                true,
+                process.env.BOT_TIMEZONE,
+                this,
+                this.options.runOnInit,
+            );
         } catch (e) {
             this.client.logger.error(e);
         }

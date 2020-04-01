@@ -10,5 +10,13 @@ export default class ClientReadyListener extends Listener {
 
     exec() {
         this.client.logger.info('Client ready...');
+
+        // Load all onReady methods in modules.
+        Object.entries(this.client.handlers).forEach(([id, handler]) => {
+            Array.from(handler.modules).forEach(([key, module]) => {
+                if (typeof module.onReady === 'function')
+                    module.onReady();
+            });
+        });
     }
 }

@@ -5,6 +5,11 @@ export default {
         CRON_STARTED: 'cron:started',
         CRON_FINISHED: 'cron:finished'
     },
+    Meetings: {
+        Sources: {
+            VIRTUAL_NA: 1,
+        },
+    },
     Colors: {
         DEFAULT: 0,
         AQUA: 1752220,

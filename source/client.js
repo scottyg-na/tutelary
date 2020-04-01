@@ -100,14 +100,21 @@ export default class TutelaryClient extends AkairoClient {
     }
 
     static filterFilesForType(type: String, filename: String, client: TutelaryClient) {
-        const match = (
-            filename.includes(`/${type}/`) || filename.includes(`\\${type}\\`)
-        );
+        const folders = ['db', 'models', 'commands', 'inhibitors', 'listeners', 'crons'].filter(a => a != type).join('|');
+        const typeMatch = filename.match(new RegExp(`/${type}/`)) || filename.match(new RegExp(`\\\\${type}\\\\`));
+        const otherMatch = filename.match(new RegExp(`/${folders}/`)) || filename.match(new RegExp(`\\\\${folders}\\\\`));
 
-        if (match)
-            client.logger.info(`Loading '${filename}' in ${type}.`);
+        if (
+            ((typeMatch && otherMatch) && (typeMatch.index > otherMatch.index)) ||
+            (typeMatch && !otherMatch)
+        ) {
+            client.logger.info(`[INIT] Loading '${filename.replace(__dirname, '')}' in ${type}.`);
+            return true;
+        }
+        else {
+            return false;
+        }
 
-        return match;
     }
 
 }

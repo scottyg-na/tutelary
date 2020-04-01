@@ -24,9 +24,6 @@ export default class DatabaseHandler extends AkairoHandler {
             loadFilter,
             automateCategories,
         });
-
-        this.on('load', module => module.init());
-        this.on('remove', module => module.init());
     }
 }
 

@@ -8,26 +8,27 @@ export default class ServerDatabaseModule extends DatabaseModule {
     instance: any = getRepository(TutelaryServer);
 
     constructor() {
-        super('db:server', {});
+        super('db:user', {});
     }
 
     onReady() {
-        const servers = [];
-        Array.from(this.client.guilds.cache).forEach(async ([id, { name, joinedTimestamp, ownerID, region }]) => {
-            try {
-                const server = new TutelaryServer();
-                server.id = id;
-                server.name = name;
-                server.since = joinedTimestamp;
-                server.owners = ownerID;
-                server.region = region;
-                servers.push(server);
-            } catch (e) {
-                this.client.logger.warn(e.message);
-            }
-        });
+        // console.log(this.client)
+        // const servers = [];
+        // Array.from(this.client.guilds.cache).forEach(async ([id, { name, joinedTimestamp, ownerID, region }]) => {
+        //     try {
+        //         const server = new TutelaryServer();
+        //         server.id = id;
+        //         server.name = name;
+        //         server.since = joinedTimestamp;
+        //         server.owners = ownerID;
+        //         server.region = region;
+        //         servers.push(server);
+        //     } catch (e) {
+        //         this.client.logger.warn(e.message);
+        //     }
+        // });
 
-        this.createOrUpdateBatch(servers);
+        // this.createOrUpdateBatch(servers);
     }
 
 }
