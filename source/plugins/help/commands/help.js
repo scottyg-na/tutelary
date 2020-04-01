@@ -50,7 +50,7 @@ export default class extends Command {
         if (command.aliases.length > 1)
             embed.addField('Aliases', command.aliases.slice(1).map(a => `\`${a}\``).join(', '));
         if (examples)
-            embed.addField('Examples', examples.map(e => `${primaryPrefix}${command} ${e}`).join('\n'));
+            embed.addField('Examples', examples.map(e => `${primaryPrefix}${command.aliases[0]} ${e}`).join('\n'));
 
         return message.util.send(embed);
     }

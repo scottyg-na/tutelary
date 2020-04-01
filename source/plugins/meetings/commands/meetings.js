@@ -1,7 +1,9 @@
+import chrono from 'chrono-node';
 import { Command, Message } from 'discord-akairo';
 import { DateTime } from 'luxon';
 import getBotDateTime from 'util/date/getBotDateTime';
 import { getAllMeetingsForDate } from '../util';
+import Constants from 'constants';
 
 export default class MeetingsCommand extends Command {
     constructor() {
@@ -9,59 +11,78 @@ export default class MeetingsCommand extends Command {
             category: 'general',
             aliases: ['meetings', 'meeting', 'meet'],
             description: {
-                content: 'Sends you a list of meetings.',
-                usage: ['test', '[command name]'],
-                examples: ['', 'today', 'tomorrow', 'sunday']
+                content: `View `,
+                usage: '[date]',
+                examples: ['', 'today', 'tomorrow', 'sunday', '24/2/2021', 'next friday']
             },
             typing: true,
             cooldown: 5000,
             ratelimit: 1,
             args: [
                 {
-                    id: 'action',
-                    type: 'string',
-                    match: 'separate',
+                    id: 'searchDate',
+                    match: 'rest'
                 }
             ]
         });
     }
 
-    exec(message: Message, { action }: { action: String }) {
-        return this.showMeetingsForDate(message);
-        // if (!action) return this.showMeetingsForDate(message);
+    exec(message: Message, { searchDate }: args) {
+        if (searchDate) {
+            const date = chrono.parseDate(searchDate, getBotDateTime().toJSDate());
+            if (!date) {
+                // error
+            } else {
+                this.showMeetingsForDate(message, getBotDateTime(DateTime.fromJSDate(date)));
+            }
+        } else {
+            this.showMeetingsForDate(message);
+        }
     }
 
     async showMeetingsForDate(message: Message, date: DateTime = getBotDateTime()) {
-        const meetings = await getAllMeetingsForDate(date);
-        const embed = this.client.util.embed()
-            .setColor('#0099ff')
-            .setTitle(`Online Meetings for ${date.toLocaleString(DateTime.DATE_HUGE)}`)
-            .setURL('https://www.na.org.au/multi/online-meetings/');
+        const db = this.client.handlers.db.instance;
+        const repository = this.client.handlers.db.modules.get('plugins:meetings:db:meetings');
 
-        meetings.forEach(meeting => {
+        console.log(date);
+
+        const meetings = await repository.getMeetingsForDate(date);
+
+        const response = this.client.util.embed()
+            .setColor(Constants.Colors.BLUE)
+            .setTitle(`Online Meetings for ${date.toLocaleString(DateTime.DATE_HUGE)}`)
+            .addFields(MeetingsCommand.meetingToFields(meetings))
+
+        // });
+
+        message.channel.send(response);
+    }
+
+    static meetingToFields(meetings: Array<object>) {
+        return meetings.map(meeting => {
             const date = getBotDateTime();
             const offset = date.offset;
-            const [startHour, startMinute] = meeting.start_time.split(':').map(t => parseInt(t));
-            const [durationHour, durationMinute] = meeting.duration_time.split(':').map(t => parseInt(t));
 
-            const startUtc = date.set({ hour: startHour, minute: startMinute });
-            const start = startUtc.plus({ minutes: offset });
+            const [sh, sm] = meeting.start.split(':').map(t => parseInt(t, 10));
+            const [dh, dm] = meeting.duration.split(':').map(t => parseInt(t, 10));
 
-            const startVic = MeetingsCommand.getDatesForTz(start, [durationHour, durationMinute]);
-            const startNz = MeetingsCommand.getDatesForTz(start.setZone('Pacific/Auckland'), [durationHour, durationMinute]);
-            const startWa = MeetingsCommand.getDatesForTz(start.setZone('Australia/Perth'), [durationHour, durationMinute]);
+            const utc = date.set({ hour: sh, minute: sm });
+            const start = utc.plus({ minutes: offset });
 
-            embed.addField(
-                `**${meeting.meeting_name}**`,
-                [
-                    `_${startVic.start}-${startVic.end} AEDT / ${startWa.start}-${startWa.end} AWST / ${startNz.start}-${startNz.end} NZDT_`,
-                    meeting.comments
-                ]
-            )
+            const times = {
+                vic: MeetingsCommand.getDatesForTz(start, [dh, dm]),
+                nz: MeetingsCommand.getDatesForTz(start.setZone('Pacific/Auckland'), [dh, dm]),
+                wa: MeetingsCommand.getDatesForTz(start.setZone('Australia/Perth'), [dh, dm]),
+            };
 
+            return {
+                name: `**${meeting.name}**`,
+                value: [
+                    `_${times.vic.start}-${times.vic.end} AEDT / ${times.wa.start}-${times.wa.end} AWST / ${times.nz.start}-${times.nz.end} NZDT_`,
+                    `${meeting.location} ${(meeting.locationDescription ? '(' + meeting.locationDescription + ')' : '')}`,
+                ],
+            }
         });
-
-        message.channel.send(embed);
     }
 
     static getDatesForTz(start: DateTime, [hours, minutes]: Array) {

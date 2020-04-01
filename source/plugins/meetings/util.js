@@ -51,22 +51,3 @@ export const getMeetingsFromVirtualNA = async (timezone: string = 'Australia/Mel
 
     return meetings;
 }
-
-export const getAllMeetingsForDate = async (date: DateTime = getBotDateTime()) => {
-    const meetings = await getAllMeetings();
-
-    const filtered = meetings.filter(m => {
-        const day = parseInt(m.weekday_tinyint, 10);
-        const dayLocal = date.weekday;
-        if (day === 1 && dayLocal === 7) return true;
-        if (day === 2 && dayLocal === 1) return true;
-        if (day === 3 && dayLocal === 2) return true;
-        if (day === 4 && dayLocal === 3) return true;
-        if (day === 5 && dayLocal === 4) return true;
-        if (day === 6 && dayLocal === 5) return true;
-        if (day === 7 && dayLocal === 6) return true;
-        return false;
-    });
-
-    return filtered;
-}
