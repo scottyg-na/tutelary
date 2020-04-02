@@ -11,7 +11,7 @@ export default class DatabaseModule extends AkairoModule {
     options: DatabaseOptions = new DatabaseOptions();
 
     constructor(id, options: DatabaseOptions) {
-        super(id, options);
+        super(`Db:${id}`, options);
         this.options = options;
     }
 

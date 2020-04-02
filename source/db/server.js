@@ -2,13 +2,14 @@ import { Command } from 'discord-akairo';
 import { getRepository } from 'fireorm';
 import DatabaseModule from 'modules/database';
 import TutelaryServer from './models/server';
+import { Message } from 'firebase-functions/lib/providers/pubsub';
 
 export default class ServerDatabaseModule extends DatabaseModule {
 
     instance: any = getRepository(TutelaryServer);
 
     constructor() {
-        super('db:server', {});
+        super('Server', {});
     }
 
     onReady() {
@@ -21,6 +22,7 @@ export default class ServerDatabaseModule extends DatabaseModule {
                 server.since = joinedTimestamp;
                 server.owners = ownerID;
                 server.region = region;
+
                 servers.push(server);
             } catch (e) {
                 this.client.logger.warn(e.message);
@@ -30,34 +32,27 @@ export default class ServerDatabaseModule extends DatabaseModule {
         this.createOrUpdateBatch(servers);
     }
 
+    async getServer(serverId) {
+        try {
+            const server = await this.instance.findById(serverId);
+            return server;
+        } catch(e) {
+            this.client.logger.warn(`Unable to find server with ID ${serverId}`);
+        }
+    }
+
+    async getTimezoneFromMessage(message: Message) {
+        let timezone = process.env.TZ;
+        try {
+            if (message.channel.type === 'text') {
+                const server = await this.getServer(message.channel.guild.id);
+                timezone = server.timezone || process.env.TZ;
+
+            }
+        } catch(e) {
+            console.log(e);
+        }
+
+        return timezone;
+    }
 }
-
-// export const ServerRepository = ;
-
-// export const createOrUpdateServer = async (client, { id, name, joinedTimestamp, ownerID, region }) => {
-//     const server = new TutelaryServer();
-//     server.id = id;
-//     server.name = name;
-//     server.since = joinedTimestamp;
-//     server.owners = ownerID;
-//     server.region = region;
-
-//     const exists = await ServerRepository.findById(id);
-//     if (!exists) {
-//         client.logger.info(`Creating database for server ${name} (${id}).`);
-//         await ServerRepository.create(server);
-//     } else {
-//         client.logger.info(`Updating database for server ${name} (${id}).`);
-//         await ServerRepository.update(omitBy(server, isUndefined));
-//     }
-// }
-
-
-// Create our server config if it doesn't already exist.
-// Array.from(this.client.guilds.cache).forEach(async ([id, guild]) => {
-//     try {
-//         await createOrUpdateServer(this.client, guild);
-//     } catch (e) {
-//         this.client.logger.warn(e.message);
-//     }
-// });

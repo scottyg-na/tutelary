@@ -7,4 +7,5 @@ export default class TutelaryServer {
     since: Date;
     owners: Array | String;
     region: String;
+    timezone: String;
 }

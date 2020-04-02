@@ -1,7 +1,6 @@
 import chrono from 'chrono-node';
 import { Command, Message } from 'discord-akairo';
-import { DateTime } from 'luxon';
-import getBotDateTime from 'util/date/getBotDateTime';
+import { DateTime, Duration } from 'luxon';
 import { getAllMeetingsForDate } from '../util';
 import Constants from 'constants';
 
@@ -27,52 +26,53 @@ export default class MeetingsCommand extends Command {
         });
     }
 
-    exec(message: Message, { searchDate }: args) {
+    onReady() {
+        this.serverRepository = this.client.getDb('Server');
+        this.meetingRepository = this.client.getDb('Meeting');
+    }
+
+    async exec(message: Message, { searchDate }: args) {
+        let date = DateTime.local();
+        let timezone = await this.serverRepository.getTimezoneFromMessage(message);
+        date = date.setZone(timezone);
+
         if (searchDate) {
-            const date = chrono.parseDate(searchDate, getBotDateTime().toJSDate());
-            if (!date) {
-                // error
-            } else {
-                this.showMeetingsForDate(message, getBotDateTime(DateTime.fromJSDate(date)));
+            const parsed = chrono.parseDate(searchDate, date.toJSDate());
+            if (parsed) {
+                return this.showMeetingsForDate(message, DateTime.fromJSDate(parsed));
             }
         } else {
-            this.showMeetingsForDate(message);
+            return await this.showMeetingsForDate(message, date);
         }
     }
 
-    async showMeetingsForDate(message: Message, date: DateTime = getBotDateTime()) {
-        const db = this.client.handlers.db.instance;
-        const repository = this.client.handlers.db.modules.get('plugins:meetings:db:meetings');
-
-        console.log(date);
-
-        const meetings = await repository.getMeetingsForDate(date);
+    async showMeetingsForDate(message: Message, date: DateTime = DateTime.local()) {
+        const meetings = await this.meetingRepository.getMeetingsForDate(date);
 
         const response = this.client.util.embed()
             .setColor(Constants.Colors.BLUE)
             .setTitle(`Online Meetings for ${date.toLocaleString(DateTime.DATE_HUGE)}`)
-            .addFields(MeetingsCommand.meetingToFields(meetings))
+            .addFields(MeetingsCommand.meetingToFields(meetings, date))
 
-        // });
-
-        message.channel.send(response);
+        return message.channel.send(response);
     }
 
-    static meetingToFields(meetings: Array<object>) {
+    static meetingToFields(meetings: Array<object>, date: DateTime = DateTime.local()) {
         return meetings.map(meeting => {
-            const date = getBotDateTime();
             const offset = date.offset;
 
             const [sh, sm] = meeting.start.split(':').map(t => parseInt(t, 10));
             const [dh, dm] = meeting.duration.split(':').map(t => parseInt(t, 10));
 
+            const duration = Duration.fromObject({ hours: dh, minutes: dm });
+
             const utc = date.set({ hour: sh, minute: sm });
             const start = utc.plus({ minutes: offset });
 
             const times = {
-                vic: MeetingsCommand.getDatesForTz(start, [dh, dm]),
-                nz: MeetingsCommand.getDatesForTz(start.setZone('Pacific/Auckland'), [dh, dm]),
-                wa: MeetingsCommand.getDatesForTz(start.setZone('Australia/Perth'), [dh, dm]),
+                vic: MeetingsCommand.getDatesForTz(start, duration),
+                nz: MeetingsCommand.getDatesForTz(start.setZone('Pacific/Auckland'), duration),
+                wa: MeetingsCommand.getDatesForTz(start.setZone('Australia/Perth'), duration),
             };
 
             return {
@@ -85,11 +85,10 @@ export default class MeetingsCommand extends Command {
         });
     }
 
-    static getDatesForTz(start: DateTime, [hours, minutes]: Array) {
-        const end = start.plus({ hours, minutes });
+    static getDatesForTz(start: DateTime, duration: Duration) {
         return {
             start: start.toFormat('h:mma'),
-            end: end.toFormat('h:mma'),
+            end: start.plus(duration).toFormat('h:mma'),
             offset: start.offsetNameShort,
         }
     }

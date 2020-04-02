@@ -1,15 +1,11 @@
 import { MessageEmbed } from 'discord.js';
 import { DateTime } from 'luxon';
 import Constants from 'constants';
-import getBotDateTime from 'util/date/getBotDateTime';
 import jft from './static/just-for-today.json';
 
 export const getForDate = (date: DateTime = DateTime.local()) => {
-    return jft[getBotDateTime().toFormat('M-d')];
-}
-
-export const getForToday = () => {
-    return getForDate();
+    console.log(date);
+    return jft[date.toFormat('M-d')];
 }
 
 export function getEmbeddedMessage(jft = {}) {

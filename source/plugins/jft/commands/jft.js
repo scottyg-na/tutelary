@@ -1,5 +1,6 @@
 import { Command } from 'discord-akairo';
-import { getForToday, getEmbeddedMessage } from '../util';
+import { DateTime } from 'luxon';
+import { getForDate, getEmbeddedMessage } from '../util';
 
 export default class JustForTodayCommand extends Command {
     constructor() {
@@ -15,8 +16,16 @@ export default class JustForTodayCommand extends Command {
         });
     }
 
-    exec(message) {
-        const response = getEmbeddedMessage(getForToday());
+    onReady() {
+        this.repository = this.client.getDb('Server');
+    }
+
+    async exec(message) {
+        let date = DateTime.local();
+        const timezone = await this.repository.getTimezoneFromMessage(message);
+        date = date.setZone(timezone);
+
+        const response = getEmbeddedMessage(getForDate(date));
         return message.channel.send(response);
     }
 }

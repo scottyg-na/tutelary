@@ -9,7 +9,7 @@ export default class CronModule extends AkairoModule {
     options: CronOptions = new CronOptions();
 
     constructor(id, options: CronOptions) {
-        super(id, options);
+        super(`Cron:${id}`, options);
         this.options = options;
     }
 

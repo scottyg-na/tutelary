@@ -2,22 +2,20 @@ import { Command } from 'discord-akairo';
 import { getRepository } from 'fireorm';
 import DatabaseModule from 'modules/database';
 import TutelaryMeeting from './models/meeting';
-import getBotDateTime from 'util/date/getBotDateTime';
 
-export default class MeetingsDatabaseModule extends DatabaseModule {
+export default class MeetingDatabaseModule extends DatabaseModule {
 
     instance: any = getRepository(TutelaryMeeting);
 
     constructor() {
-        super('plugins:meetings:db:meetings', {});
+        super('Meeting', {});
     }
 
     onReady() {
 
     }
 
-    async getMeetingsForDate(date: DateTime = getBotDateTime()) {
-        console.log(date);
+    async getMeetingsForDate(date: DateTime = DateTime.local()) {
         return await this.instance
             .whereEqualTo('weekday', date.weekday)
             .find();

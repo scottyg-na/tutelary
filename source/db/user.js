@@ -8,7 +8,7 @@ export default class ServerDatabaseModule extends DatabaseModule {
     instance: any = getRepository(TutelaryServer);
 
     constructor() {
-        super('db:user', {});
+        super('User', {});
     }
 
     onReady() {

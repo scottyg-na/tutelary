@@ -9,7 +9,6 @@ export default class CommandStartedListener extends Listener {
     }
 
     exec(message, command) {
-        // const userRepository = this.client.handlers.db.modules.get('db:user').repository;
         // console.log(message);
     }
 }

@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import getBotDateTime from 'util/date/getBotDateTime';
 import { DateTime } from 'luxon';
 import TutelaryMeeting from './db/models/meeting';
 import Constants from 'constants';

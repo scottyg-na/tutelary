@@ -51,6 +51,6 @@ export default class Logger {
     }
 
     get time() {
-        return DateTime.local().setZone(process.env.BOT_TIMEZONE).toFormat('dd/MM/yyyy, HH:mm:ss.S');
+        return DateTime.local().toFormat('dd/MM/yyyy, HH:mm:ss.S');
     }
 }

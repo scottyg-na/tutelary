@@ -99,6 +99,14 @@ export default class TutelaryClient extends AkairoClient {
         }
     }
 
+    getDb(name: String) {
+        try {
+            return this.handlers.db.modules.get(`Db:${name}`);
+        } catch(e) {
+            this.logger.warn(`[Client.getDb] Could not find repository named Db:${name}.`)
+        }
+    }
+
     static filterFilesForType(type: String, filename: String, client: TutelaryClient) {
         const folders = ['db', 'models', 'commands', 'inhibitors', 'listeners', 'crons'].filter(a => a != type).join('|');
         const typeMatch = filename.match(new RegExp(`/${type}/`)) || filename.match(new RegExp(`\\\\${type}\\\\`));
