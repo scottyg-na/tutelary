@@ -1,4 +1,6 @@
 import { Listener } from 'discord-akairo';
+import TutelaryServer from 'models/database/TutelaryServer';
+import TutelaryServerSettings from 'models/database/TutelaryServerSettings';
 
 export default class ClientReadyListener extends Listener {
     constructor() {
@@ -22,6 +24,17 @@ export default class ClientReadyListener extends Listener {
         } else {
             this.client.logger.info('Standby Mode');
         }
+
+        // Populate our servers, if we haven't already.
+        Array.from(this.client.guilds.cache).forEach(async ([id, guild]) => {
+            const server = await this.client.getServer(guild.id);
+            if (!server) {
+                this.client.createServer(guild);
+            }
+            if (!server.settings) {
+                this.client.createServerSettings(guild);
+            }
+        });
 
         return true;
 

@@ -1,16 +1,27 @@
 import { AkairoModule, AkairoError } from 'discord-akairo';
 import { CronJob } from 'cron';
+import { remove } from 'lodash';
 import Constants from 'constants';
 import CronOptions from 'models/CronOptions';
 
 export default class CronModule extends AkairoModule {
 
-    task: CronJob;
-    options: CronOptions = new CronOptions();
+    jobs: Array<CronJob> = [];
 
     constructor(id, options: CronOptions) {
-        super(`Cron:${id}`, options);
-        this.options = options;
+        super(id, options);
+    }
+
+    get(id) {
+        return this.jobs.find(job => job.id === job);
+    }
+
+    add(job: CronJob) {
+        this.jobs.push(job);
+    }
+
+    remove(id) {
+        remove(this.jobs, (job) => job.id === id);
     }
 
     ready() {

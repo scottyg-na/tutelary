@@ -1,10 +1,11 @@
-import { Collection } from 'fireorm';
+import { Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript';
 
-@Collection()
-export default class TutelaryUser {
+@Table({ tableName: 'users' })
+export default class TutelaryUser extends Model<TutelaryUser> {
+    @PrimaryKey
+    @Column({ type: DataType.STRING })
     id: string;
+
+    @Column({ type: DataType.STRING })
     name: string;
-    servers: Array<string>;
-    owners: Array | String;
-    region: String;
 }

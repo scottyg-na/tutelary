@@ -1,15 +1,28 @@
-import { Collection, Type } from 'fireorm';
-import MeetingReminderCronSettings from 'models/MeetingReminderCronSettings';
-import JustForTodayCronSettings from 'models/JustForTodayCronSettings';
+import { Column, DataType, Model, PrimaryKey, Table, AllowNull, Default, HasOne } from 'sequelize-typescript';
+import TutelaryServerSettings from 'models/database/TutelaryServerSettings';
 
-@Collection()
-export default class TutelaryServer {
-    id: string;
-    name: string;
+@Table({ tableName: 'servers' })
+export default class TutelaryServer extends Model<TutelaryServer> {
+
+    @PrimaryKey
+    @Column({ type: DataType.STRING, allowNull: false })
+    id: String;
+
+    @Column({ type: DataType.STRING, allowNull: false })
+    name: String;
+
+    @Column({ type: DataType.DATE, allowNull: false })
     since: Date;
-    owners: Array | String;
+
+    @Column({ type: DataType.JSON, allowNull: false })
+    owners: Array;
+
+    @Column({ type: DataType.STRING, allowNull: false })
     region: String;
-    timezone: String = 'GMT';
-    MeetingReminderCron: Object;
-    JustForTodayCron: Object;
+
+    @Column({ type: DataType.STRING, defaultValue: 'GMT' })
+    timezone: String;
+
+    @HasOne(() => TutelaryServerSettings)
+    settings: TutelaryServerSettings;
 }

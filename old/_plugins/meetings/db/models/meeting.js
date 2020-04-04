@@ -1,7 +1,5 @@
-import { Collection } from 'fireorm';
 import { Duration } from 'luxon';
 
-@Collection()
 export default class TutelaryMeeting {
     id: string;
     name: string;
