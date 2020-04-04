@@ -3,7 +3,12 @@ export default {
         CRON_CREATED: 'cron:created',
         CRON_REMOVED: 'cron:removed',
         CRON_STARTED: 'cron:started',
-        CRON_FINISHED: 'cron:finished'
+        CRON_FINISHED: 'cron:finished',
+        MEETING_CREATED: 'meeting:created',
+        MEETING_MODIFIED: 'meeting:modified',
+        MEETING_REMOVED: 'meeting:removed',
+        MEETING_STARTED: 'meeting:started',
+        MEETING_FINISHED: 'meeting:finished'
     },
     Meetings: {
         Sources: {

@@ -1,7 +1,7 @@
 import { AkairoModule, AkairoError } from 'discord-akairo';
 import { CronJob } from 'cron';
 import Constants from 'constants';
-import CronOptions from 'modules/cron/models/options';
+import CronOptions from 'models/CronOptions';
 
 export default class CronModule extends AkairoModule {
 
@@ -13,7 +13,7 @@ export default class CronModule extends AkairoModule {
         this.options = options;
     }
 
-    onReady() {
+    ready() {
         try {
             this.handler.emit(
                 Constants.Events.CRON_CREATED,
@@ -33,8 +33,12 @@ export default class CronModule extends AkairoModule {
                 true,
                 process.env.BOT_TIMEZONE,
                 this,
-                this.options.runOnInit,
+                false,
             );
+
+            if (this.options.runOnInit === true) {
+                setTimeout(() => this.task.fireOnTick(), 2000);
+            }
         } catch (e) {
             this.client.logger.error(e);
         }

@@ -8,15 +8,22 @@ export default class ClientReadyListener extends Listener {
         });
     }
 
-    exec() {
-        this.client.logger.info('Client ready...');
+    async exec() {
+        const bot = this.client.user;
+        const guilds = this.client.guilds.cache.size;
 
-        // Load all onReady methods in modules.
-        Object.entries(this.client.handlers).forEach(([id, handler]) => {
-            Array.from(handler.modules).forEach(([key, module]) => {
-                if (typeof module.onReady === 'function')
-                    module.onReady();
-            });
-        });
+        this.client.logger.info(`Logged in as ${bot.tag} (ID: ${bot.id})`);
+        bot.setActivity(`@${bot.username} help`, { type: 'LISTENING' });
+
+        if (guilds) {
+            this.client.logger.info(`Listening to ${guilds === 1
+                ? this.client.guilds.cache.first()
+                : `${guilds} Guilds`}`);
+        } else {
+            this.client.logger.info('Standby Mode');
+        }
+
+        return true;
+
     }
 }

@@ -9,6 +9,6 @@ export default class CommandStartedListener extends Listener {
     }
 
     exec(message, command) {
-        this.client.logger.info(`[COMMAND] Command: ${command}, Channel: ${message.channel.name || 'DM'}, User: ${message.author.id}`);
+        this.client.logger.info(`[Event: ${this.event}] ${message.author.tag} ran '${message.content}' in ${message.channel.name || 'DM'}`);
     }
 }

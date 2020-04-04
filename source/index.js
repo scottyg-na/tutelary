@@ -4,7 +4,8 @@ import TutelaryClient from './client';
 import { DateTime, Settings as DateTimeSettings } from 'luxon';
 
 dotenv.config();
-DateTimeSettings.defaultZoneName = process.env.TZ || 'GMT';
+process.env.TZ = process.env.BOT_TIMEZONE || 'GMT';
+DateTimeSettings.defaultZoneName = process.env.TZ;
 
 const config: Object = {
     name: 'Tutelary',
@@ -14,6 +15,8 @@ const config: Object = {
     owners: process.env.BOT_OWNERS
 }
 
-new TutelaryClient(config)
-    .build()
-    .start();
+const Client = new TutelaryClient(config);
+
+Client.build()
+    .start()
+    .catch(e => Client.logger.error(e));
