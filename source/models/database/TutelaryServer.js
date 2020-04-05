@@ -20,9 +20,6 @@ export default class TutelaryServer extends Model<TutelaryServer> {
     @Column({ type: DataType.STRING, allowNull: false })
     region: String;
 
-    @Column({ type: DataType.STRING, defaultValue: 'GMT' })
-    timezone: String;
-
     @HasOne(() => TutelaryServerSettings)
     settings: TutelaryServerSettings;
 }

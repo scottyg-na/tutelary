@@ -6,7 +6,7 @@ import Constants from 'constants';
 const MEETINGS_API = 'https://bmlt.virtual-na.org/main_server/client_interface/json/';
 const MEETINGS_API_PARAMS = '?switcher=GetSearchResults&data_field_key=duration_time,start_time,weekday_tinyint,service_body_bigint,longitude,latitude,location_province,location_municipality,location_info,location_text,formats,format_shared_id_list,comments,meeting_name,id_bigint,meeting_name,location_text,formatted_comments&services[]=1&services[]=13&recursive=0&sort_keys=start_time';
 
-export const getMeetingsFromVirtualNA = async (timezone: string = 'Australia/Melbourne') => {
+export const getMeetingsFromVirtualNA = async (timezone: string = process.env.TZ) => {
     const response = await fetch(`${MEETINGS_API}${MEETINGS_API_PARAMS}`);
     const responseJson = await response.json();
 

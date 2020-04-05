@@ -1,25 +1,24 @@
-import { AkairoModule, AkairoError, AkairoClient } from 'discord-akairo';
-import { Model } from  'sequelize-typescript';
-import { isEqual, omitBy, isUndefined } from 'lodash';
-import Constants from 'constants';
+import { Model } from 'sequelize-typescript';
 
 export default class DatabaseService {
-     db: Model;
+    provider: T;
+    db: Model;
 
     constructor(provider: T, model: Model) {
-        this.db = provider.getRepository(model);
+      this.provider = provider;
+      this.db = provider.getRepository(model);
     }
 
     async bulkFindOrCreate(records: Array) {
-        const actions = [];
-        records.forEach((record) => {
-            actions.push(this.findCreateFind({
-                where: { id: record.id },
-                defaults: record,
-            }));
-        });
+      const actions = [];
+      records.forEach((record) => {
+        actions.push(this.findCreateFind({
+          where: { id: record.id },
+          defaults: record,
+        }));
+      });
 
-        return Promise.all(actions);
+      return Promise.all(actions);
     }
 
     build = (...args) => this.db.build(...args);
