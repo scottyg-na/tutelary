@@ -7,7 +7,6 @@ import Constants from 'constants';
 export default class MeetingsCommand extends Command {
     constructor() {
         super('meetings', {
-            category: 'general',
             aliases: ['meetings', 'meeting', 'meet'],
             description: {
                 content: `View `,

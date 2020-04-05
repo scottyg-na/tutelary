@@ -4,7 +4,6 @@ import TutelaryError from 'models/TutelaryError';
 import Logger from 'util/logger';
 import CronHandler from 'modules/cron/handler';
 import { create } from 'database';
-import DatabaseService from 'services/database';
 import TutelaryServer from 'models/database/TutelaryServer';
 
 const db = create();
@@ -16,10 +15,16 @@ export default class TutelaryClient extends AkairoClient {
     db: any = db;
     logger: Logger = new Logger().logger;
     config: Object = {};
+    dialog: Function = (title: string, description: StringResolvable = '') => {
+        return this.util.embed()
+            .setColor(0xFE9257)
+            .setTitle(title)
+            .setDescription(description);
+    };
     handlers: Object = {
         command: new CommandHandler(this, {
             allowMention: true,
-            automateCategories: false,
+            automateCategories: true,
             commandUtil: true,
             blockBots: true,
             blockClient: true,
@@ -106,42 +111,9 @@ export default class TutelaryClient extends AkairoClient {
         }
     }
 
-    async getServer(guildId) {
-        const { dataValues: server } = await this.db.Server.findByPk(guildId, {
-            include: [ this.db.ServerSettings ]
-        });
-        return server;
-    }
-
-    async createServer(guild) {
-        try {
-            this.logger.info(`Adding connected server ${guild.name}#${guild.id} to database`);
-            await this.db.Server.create({
-                id: guild.id,
-                name: guild.name,
-                since: guild.joinedTimestamp,
-                owners: [guild.ownerID],
-                region: guild.region
-            });
-        } catch (e) {
-            this.logger.error(e);
-        }
-    }
-
     async getServerSettings(guildId, setting) {
         const server = await this.getServer(guildId);
         return server.settings.get(setting);
-    }
-
-    async createServerSettings(guild) {
-        try {
-            this.logger.info(`Adding connected server settings for ${guild.name}#${guild.id} to database`);
-            await this.db.ServerSettings.create({
-                id: guild.id
-            });
-        } catch(e) {
-            this.logger.error(e);
-        }
     }
 
 }

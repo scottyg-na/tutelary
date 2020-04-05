@@ -1,11 +1,16 @@
 import path from 'path';
 import fs from 'fs';
 import { Op } from 'sequelize';
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize, Repository } from 'sequelize-typescript';
+import DatabaseService from 'services/database';
 import TutelaryServer from 'models/database/TutelaryServer';
 import TutelaryMeeting from 'models/database/TutelaryMeeting';
 import TutelaryUser from 'models/database/TutelaryUser';
 import TutelaryServerSettings from 'models/database/TutelaryServerSettings';
+import UserDatabaseService from 'services/database/user';
+import ServerDatabaseService from 'services/database/server';
+import MeetingDatabaseService from 'services/database/meeting';
+import ServerSettingsDatabaseService from 'services/database/server-settings';
 
 let first = false;
 const databasePath = path.normalize(__dirname + '/../.data/');
@@ -49,9 +54,9 @@ export const create = () => {
     return {
         sequelize,
         Op,
-        Server: sequelize.getRepository(TutelaryServer),
-        ServerSettings: sequelize.getRepository(TutelaryServerSettings),
-        Meeting: sequelize.getRepository(TutelaryMeeting),
-        User: sequelize.getRepository(TutelaryUser),
+        Server: new ServerDatabaseService(sequelize, TutelaryServer),
+        ServerSettings: new ServerSettingsDatabaseService(sequelize, TutelaryServerSettings),
+        Meeting: new MeetingDatabaseService(sequelize, TutelaryMeeting),
+        User: new UserDatabaseService(sequelize, TutelaryUser),
     };
 };

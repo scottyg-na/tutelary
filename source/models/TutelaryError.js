@@ -20,7 +20,6 @@ export default class TutelaryError {
         this.exec();
     }
 
-
     exec() {
         if (this.err && this.command) this.command.client.logger.error(this.err);
     }

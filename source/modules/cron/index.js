@@ -16,8 +16,10 @@ export default class CronModule extends AkairoModule {
         return this.jobs.find(job => job.id === job);
     }
 
-    add(job: CronJob) {
-        this.jobs.push(job);
+    add(options) {
+        this.jobs.push(new CronJob(
+
+        ));
     }
 
     remove(id) {

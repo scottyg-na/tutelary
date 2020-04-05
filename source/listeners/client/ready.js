@@ -25,18 +25,13 @@ export default class ClientReadyListener extends Listener {
             this.client.logger.info('Standby Mode');
         }
 
-        // Populate our servers, if we haven't already.
-        Array.from(this.client.guilds.cache).forEach(async ([id, guild]) => {
-            const server = await this.client.getServer(guild.id);
-            if (!server) {
-                this.client.createServer(guild);
-            }
-            if (!server.settings) {
-                this.client.createServerSettings(guild);
-            }
-        });
-
-        return true;
+        // Create our server settings if they haven't been already.
+        try {
+            await this.client.db.Server.bulkFindOrCreate(this.client.guilds.cache);
+            await this.client.db.ServerSettings.bulkFindOrCreate(this.client.guilds.cache);
+        } catch(e) {
+            this.client.logger.warn(e);
+        }
 
     }
 }

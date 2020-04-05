@@ -5,7 +5,6 @@ import { getForDate, getEmbeddedMessage } from 'util/jft';
 export default class JustForTodayCommand extends Command {
     constructor() {
         super('jft', {
-            category: 'general',
             aliases: ['jft', 'just-for-today'],
             description: {
                 content: 'Sends you todays Just For Today reading.',
