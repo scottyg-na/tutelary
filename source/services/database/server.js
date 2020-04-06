@@ -1,16 +1,14 @@
 import DatabaseService from 'services/database';
+import { AkairoError } from 'discord-akairo';
 
 export default class ServerDatabaseService extends DatabaseService {
-  async getServer(id, options = {}) {
-    return this.findById(id, options);
-  }
-
-  async getServerSettings(id) {
-    const server = await this.getServer(id, {
-      include: [this.provider.models.TutelaryServerSettings],
-    });
-
-    return server.get('settings');
+  async getServer(id: String, options: object = {}) {
+    try {
+      const result = await this.findById(id, options);
+      return result;
+    } catch (e) {
+      throw new AkairoError(e);
+    }
   }
 
   bulkFindOrCreate(servers: Array) {

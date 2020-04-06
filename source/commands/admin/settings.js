@@ -1,10 +1,8 @@
 import { Command, Message } from 'discord-akairo';
-import { getPaths } from 'util/object';
 import { Permissions } from 'discord.js';
 import {
-  get, set, remove, assign, difference, unset,
+  get, set,
 } from 'lodash';
-import { ServerSettings } from 'models/database/TutelaryServerSettings';
 
 export default class SettingsCommand extends Command {
     settings: any;
@@ -42,15 +40,8 @@ export default class SettingsCommand extends Command {
 
     async before(message: Message) {
       try {
-        const settings = await this.client.db.Server.getServerSettings(message.guild.id);
-        const defaultObject = JSON.parse(JSON.stringify(new ServerSettings()));
-        const settingsObject = settings.get('settings');
-
-        unset(settingsObject, difference(getPaths(settingsObject), getPaths(defaultObject)));
-
-        this.settings = settings;
-        this.settingsObject = assign({}, defaultObject, settingsObject);
-        this.settingsPaths = remove(getPaths(this.settingsObject), (v) => !['jftCron', 'meeting', 'admin'].includes(v));
+        this.db = this.client.db.ServerSettings;
+        this.settings = (await this.db.getSettingsForServer(message.guild.id)).get('settings');
       } catch (e) {
         this.client.logger.error(e);
       }
@@ -59,31 +50,59 @@ export default class SettingsCommand extends Command {
     async exec(message: Message, { property, value }: args) {
       try {
         if (!property) {
-          const values = this.settingsPaths
-            .map((path) => `${path} = ${JSON.stringify(get(this.settingsObject, path))}`);
-
-          message.channel.send([
-            '```bash',
-            ...values,
-            '```',
-          ]);
-        } else if (property && !value) {
-          if (this.settingsPaths.includes(property)) {
-            message.channel.send(['```bash', `${property} = ${JSON.stringify(get(this.settingsObject, property))}`, '```']);
-          } else {
-            // @TODO: Handle error message here.
-            return false;
-          }
-        } else if (this.settingsPaths.includes(property)) {
-          set(this.settingsObject, property, JSON.parse(value));
-          await this.settings.update({ settings: this.settingsObject });
-          message.channel.send(['Done.', '```bash\n', `${property} = ${value}`, '```']);
-        } else {
-          // @TODO: Handle error message here.
-          return false;
+          return this.displayAll(message);
         }
+
+        if (property && !value) {
+          return this.displaySingle(message, property);
+        }
+
+        if (property && value && this.db.getSettingsPaths(this.settings).includes(property)) {
+          return await this.updateSingle(message, property, value);
+        }
+
+        // return false;
       } catch (e) {
         this.client.logger.error(e);
       }
+
+      return false;
+    }
+
+    displayAll(message: Message) {
+      const { prefix } = this.client.handlers.command;
+      const primaryPrefix = Array.isArray(prefix) ? prefix[0] : prefix;
+
+      const values = this.db.getSettingsPaths(this.settings)
+        .map((path) => `  "${path}": ${JSON.stringify(get(this.settings, path))},`);
+
+      return message.channel.send(
+        this.client.dialog(
+          'Server Settings',
+          [
+            `*${message.guild.name} (ID: ${message.guild.id})*`,
+            ' ',
+            `For help on how to change these settings, use **${primaryPrefix}help settings [setting]**`,
+            '```json',
+            '{',
+            ...values,
+            '}',
+            '```',
+          ],
+        ),
+      );
+    }
+
+    displaySingle(message: Message, property: String) {
+      if (this.db.getSettingsPaths(this.settings).includes(property)) {
+        return message.channel.send(['```bash', `${property} = ${JSON.stringify(get(this.settings, property))}`, '```']);
+      }
+      return true;
+    }
+
+    async updateSingle(message: Message, property: String, value: any) {
+      set(this.settings, property, JSON.parse(value));
+      await this.db.setSettingsForServer(message.guild.id, { settings: this.settings });
+      return message.channel.send(`The setting \`${property}\` has been updated, it is now \`${value}\`.`);
     }
 }

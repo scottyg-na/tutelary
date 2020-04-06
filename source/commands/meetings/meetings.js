@@ -31,7 +31,6 @@ export default class MeetingsCommand extends Command {
         settings = await this.client.db.Server.findById(message.guild.id, {
           include: [this.client.db.ServerSettings.db],
         });
-        console.log(settings.get('settings'));
       } else {
         settings = await this.client.db.User.findById(message.author.id);
       }

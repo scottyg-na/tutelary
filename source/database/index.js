@@ -31,7 +31,6 @@ const databaseName = 'tutelary.sqlite';
 
 
 export const sequelize = new Sequelize({
-  repositoryMode: true,
   dialect: 'sqlite',
   storage: path.normalize(databasePath + databaseName),
   define: {

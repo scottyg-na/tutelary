@@ -1,4 +1,5 @@
 import { Model } from 'sequelize-typescript';
+import { validateOrReject } from 'class-validator';
 
 export default class DatabaseService {
     provider: T;
@@ -21,22 +22,26 @@ export default class DatabaseService {
       return Promise.all(actions);
     }
 
-    build = (...args) => this.db.build(...args);
-    bulkCreate = (...args) => this.db.bulkCreate(...args);
-    create = (...args) => this.db.create(...args);
-    find = (...args) => this.db.find(...args);
-    findAll = (...args) => this.db.findAll(...args);
-    findAndCountAll = (...args) => this.db.findAndCountAll(...args);
-    findById = (...args) => this.db.findByPk(...args);
-    findCreateFind = (...args) => this.db.findCreateFind(...args);
-    findOne = (...args) => this.db.findOne(...args);
-    findOrBuild = (...args) => this.db.findOrBuild(...args);
-    findOrCreate = (...args) => this.db.findCreateFind(...args);
-    getTableName = (...args) => this.db.getTableName(...args);
-    increment = (...args) => this.db.increment(...args);
-    max = (...args) => this.db.max(...args);
-    min = (...args) => this.db.min(...args);
-    truncate = (...args) => this.db.truncate(...args);
-    update = (...args) => this.db.update(...args);
-    upsert = (...args) => this.db.upsert(...args);
+    async validate(value: T) {
+      await validateOrReject(value);
+    }
+
+    build = async (...args) => this.db.build(...args);
+    bulkCreate = async (...args) => this.db.bulkCreate(...args);
+    create = async (...args) => this.db.create(...args);
+    find = async (...args) => this.db.find(...args);
+    findAll = async (...args) => this.db.findAll(...args);
+    findAndCountAll = async (...args) => this.db.findAndCountAll(...args);
+    findById = async (...args) => this.db.findByPk(...args);
+    findCreateFind = async (...args) => this.db.findCreateFind(...args);
+    findOne = async (...args) => this.db.findOne(...args);
+    findOrBuild = async (...args) => this.db.findOrBuild(...args);
+    findOrCreate = async (...args) => this.db.findCreateFind(...args);
+    getTableName = async (...args) => this.db.getTableName(...args);
+    increment = async (...args) => this.db.increment(...args);
+    max = async (...args) => this.db.max(...args);
+    min = async (...args) => this.db.min(...args);
+    truncate = async (...args) => this.db.truncate(...args);
+    update = async (...args) => this.db.update(...args);
+    upsert = async (...args) => this.db.upsert(...args);
 }
