@@ -17,7 +17,7 @@ export default class ServerSettingsUpdatedListener extends Listener {
       m.destroyAll();
       m.reload();
     }
-    if (property.includes('meetings.')) {
+    if (property.includes('meeting.')) {
       const m = this.client.handlers.cron.modules.get(Constants.Modules.CRON_MEETING_REMINDER);
       m.destroyAll();
       m.reload();

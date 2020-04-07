@@ -28,7 +28,7 @@ export default class JustForTodayCron extends CronModule {
                 job.id = `${Constants.Modules.CRON_JFT}-${id}-${Math.random().toString(36).slice(2)}`;
                 job.cronTime = settings.jftCron.time;
                 job.onTick = () => this.exec(job.id, settings.timezone, settings.jftCron.channels);
-                job.onComplete = () => { };
+                job.onComplete = null;
                 job.start = true;
                 job.timezone = settings.timezone;
                 job.context = null;

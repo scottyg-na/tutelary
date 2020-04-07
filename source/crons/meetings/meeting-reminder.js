@@ -39,21 +39,26 @@ export default class MeetingReminderCron extends CronModule {
 
             const [sh, sm] = m.start.split(':').map((t) => parseInt(t, 10));
             const utc = date.set({ hour: sh, minute: sm });
-            const start = utc.plus({ minutes: offset }).minus({ minutes: 10 });
+            const start = utc.plus({ minutes: offset });
 
-            if (start > date) {
-              const job = new CronOptions();
-              job.id = `${Constants.Modules.CRON_MEETING_REMINDER}-${id}-${m.id}`;
-              job.cronTime = start.toJSDate();
-              job.onTick = () => this.exec(server.id, job.id, m, start, settings.meeting.remindersChannel);
-              job.onComplete = () => { };
-              job.start = true;
-              job.timezone = settings.timezone;
-              job.context = null;
-              job.runOnInit = false;
+            [30, 10, 0].forEach(time => {
+              const reminder = utc.plus({ minutes: offset }).minus({ minutes: time });
 
-              this.add(job);
-            }
+              if (reminder > date) {
+                const job = new CronOptions();
+                job.id = `${Constants.Modules.CRON_MEETING_REMINDER}-${id}-${time}min-${m.id}`;
+                job.cronTime = reminder.toJSDate();
+                // job.cronTime = date.plus({ seconds: 5 }).toJSDate();
+                job.onTick = async () => await this.exec(server.id, job.id, m, start, time, settings.meeting.remindersChannel);
+                job.onComplete = async () => await this.destroy(job.id);
+                job.start = true;
+                job.timezone = timezone;
+                job.context = null;
+                job.runOnInit = false;
+
+                this.add(job);
+              }
+            });
           });
         } else {
 
@@ -62,7 +67,7 @@ export default class MeetingReminderCron extends CronModule {
     });
   }
 
-  async exec(serverId, jobId, meeting, date, channel) {
+  async exec(serverId, jobId, meeting, start, startsIn, channel) {
     super.exec(jobId);
     try {
       await new Promise((resolve, reject) => {
@@ -72,18 +77,22 @@ export default class MeetingReminderCron extends CronModule {
         }).call(this);
       });
 
-      const match = this.client.util.resolveChannel(channel, this.client.channels.cache);
-      if (match) {
-        match.send(
-          this.client.dialog(`Meeting starting in 10 minutes!`)
+      const reminderChannel = this.client.util.resolveChannel(channel, this.client.channels.cache);
+
+      if (reminderChannel) {
+        const reminderChannelIcon = reminderChannel.guild.iconURL({ format: 'webp', size: 16 });
+
+        reminderChannel.send(
+          `@here A meeting is starting ${startsIn === 0 ? 'now' : 'in ' + startsIn + ' minutes'}!`,
+          this.client.dialog('')
+            .setAuthor(meeting.name, reminderChannelIcon, meeting.location)
             .setDescription([
-              `**${meeting.name}**`,
-              'You can [click here to join](' + meeting.location + ') the meeting voice chat now.'
+              'Feel free to head on over to the meeting now by [clicking here](' + meeting.location + ').'
             ])
             .addField('DESCRIPTION', !isEmpty(meeting.locationDescription) ? meeting.locationDescription : 'No Description')
-            .addField('DURATION', meeting.duration)
-            .addField('FORMAT', meeting.formats.join(','))
-        );
+            .addField('DURATION', meeting.duration, true)
+            .addField('FORMAT', meeting.formats.join(', '), true)
+          );
       }
     } catch (e) {
       this.client.logger.error(e.message);

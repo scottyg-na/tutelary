@@ -15,7 +15,7 @@ export default class FetchMeetingsCron extends CronModule {
     job.id = `${Constants.Modules.CRON_FETCH_MEETINGS}-${Math.random().toString(36).slice(2)}`;
     job.cronTime = '0 0 */1 * * *';
     job.onTick = () => this.exec(job.id);
-    job.onComplete = () => {};
+    job.onComplete = null;
     job.start = true;
     job.timezone = process.env.BOT_TIMEZONE;
     job.context = null;
