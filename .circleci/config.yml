@@ -30,7 +30,7 @@ jobs:
             echo "BOT_OWNERS=${BOT_OWNERS}
               BOT_TIMEZONE=${BOT_TIMEZONE}
               DISCORD_TOKEN=${DISCORD_TOKEN}
-              DISCORD_NICKNAME=${DISCORD_NICKNAME}
+              DISCORD_NICKNAME=${DISCORD_NICKNAME}"
       - run:
           name: Build
           command: yarn build
