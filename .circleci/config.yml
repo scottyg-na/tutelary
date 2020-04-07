@@ -66,7 +66,7 @@ jobs:
           name: Deploy
           command: |
             if [ "${CIRCLE_BRANCH}" = "master" ]; then
-              rsync -Oavce ssh ~/project/dist/ tutelary@$REMOTE_HOST:/srv/tutelary.scottgeary.me/bot
+              rsync -Oazvhce --delete --exclude '.data/*' ssh ~/project/dist/ tutelary@$REMOTE_HOST:/srv/tutelary.scottgeary.me/bot
               ssh -t tutelary@$REMOTE_HOST "cd ~/www/bot; yarn install"
               ssh -t tutelary@$REMOTE_HOST "pm2 restart index"
             else
