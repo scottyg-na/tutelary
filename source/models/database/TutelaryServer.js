@@ -8,6 +8,9 @@ export default class TutelaryServer extends Model<TutelaryServer> {
     @Column({ type: DataType.STRING, allowNull: false })
     id: String;
 
+    @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: true })
+    enabled: Boolean;
+
     @Column({ type: DataType.STRING, allowNull: false })
     name: String;
 

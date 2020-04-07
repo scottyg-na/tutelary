@@ -1,11 +1,13 @@
 import { Model } from 'sequelize-typescript';
 import { validateOrReject } from 'class-validator';
+import EventEmitter from 'events';
 
-export default class DatabaseService {
+export default class DatabaseService extends EventEmitter {
     provider: T;
     db: Model;
 
     constructor(provider: T, model: Model) {
+      super();
       this.provider = provider;
       this.db = provider.getRepository(model);
     }

@@ -34,6 +34,11 @@
         "lines-between-class-members": "off",
         "no-console": "off",
         "no-debugger": "off",
+        "padded-blocks": ["warn", {
+            "blocks": "never",
+            "classes": "always",
+            "switches": "always",
+        }],
         "max-len": [
             "error",
             {

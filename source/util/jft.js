@@ -5,11 +5,10 @@ import jft from 'static/jft/content.json';
 
 export const getForDate = (date: DateTime = DateTime.local()) => jft[date.toFormat('M-d')];
 
-export function getEmbeddedMessage(jft = {}) {
-  return new MessageEmbed()
-    .setColor(Constants.Colors.BLUE)
-    .setAuthor(`${jft.date}`)
+export function getDialog(dialog, jft = {}) {
+  return dialog
     .setTitle(`${jft.vision}`)
+    .setAuthor(`${jft.date}`)
     .setDescription([
       `_${jft.quote}_`,
       `${jft.reference}`,

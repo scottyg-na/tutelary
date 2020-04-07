@@ -1,8 +1,9 @@
 import { AkairoError } from 'discord-akairo';
 import {
-  difference, omit, merge, remove,
+  difference, omit, merge, remove, set, get
 } from 'lodash';
-import DatabaseService from 'services/database';
+import DatabaseService from 'services/database/DatabaseService';
+import Constants from 'constants';
 import { ServerSettings } from 'models/database/TutelaryServerSettings';
 import { getPaths } from 'util/object';
 
@@ -25,7 +26,7 @@ export default class ServerSettingsDatabaseService extends DatabaseService {
 
       return result;
     } catch (e) {
-      throw new AkairoError(e);
+      throw new Error(e);
     }
   }
 
@@ -36,7 +37,39 @@ export default class ServerSettingsDatabaseService extends DatabaseService {
       const result = await this.findById(id);
       await result.update({ settings });
     } catch (e) {
-      throw new AkairoError(e);
+      throw new Error(e);
+    }
+  }
+
+  async getSettingForServer(id: String, property: String) {
+    try {
+      const settings = (await this.getSettingsForServer(id)).get();
+      const value = get(settings, ['settings', property].join('.'));
+      return value;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  async setSettingForServer(id: String, property: String, value: any) {
+    try {
+      const settings = (await this.getSettingsForServer(id)).get();
+      if (!this.getSettingsPaths(settings)) {
+        throw new Error('Unable to set.')
+      }
+
+      set(settings, ['settings', property].join('.'), value);
+      await this.setSettingsForServer(id, settings);
+
+      this.emit(
+        Constants.Events.SERVER_SETTING_UPDATED,
+        id,
+        property,
+        value,
+      );
+    } catch (e) {
+      console.log(e);
+      throw new Error(e);
     }
   }
 

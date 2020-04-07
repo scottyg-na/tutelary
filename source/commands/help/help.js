@@ -5,6 +5,7 @@ export default class extends Command {
   constructor() {
     super('help', {
       aliases: ['help', 'commands'],
+      channel: 'text',
       description: {
         content: 'Displays available commands or command information',
         usage: '[command name]',

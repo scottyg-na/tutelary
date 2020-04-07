@@ -3,17 +3,87 @@ export default {
     CRON_CREATED: 'cron:created',
     CRON_REMOVED: 'cron:removed',
     CRON_STARTED: 'cron:started',
+    CRON_STOPPED: 'cron:stopped',
+    CRON_RUNNING: 'cron:running',
     CRON_FINISHED: 'cron:finished',
     MEETING_CREATED: 'meeting:created',
     MEETING_MODIFIED: 'meeting:modified',
     MEETING_REMOVED: 'meeting:removed',
     MEETING_STARTED: 'meeting:started',
     MEETING_FINISHED: 'meeting:finished',
+    SERVER_SETTING_UPDATED: 'server-setting:updated',
+  },
+  Modules: {
+    CRON_JFT: 'cron:jft',
+    CRON_FETCH_MEETINGS: 'cron:fetch-meetings',
+    CRON_MEETING_REMINDER: 'cron:meeting-reminder',
   },
   Meetings: {
     Sources: {
       VIRTUAL_NA: 1,
     },
+    NaOnlineSources: {
+      AUSTRALIA: {
+        name: 'Australia',
+        sources: [1, 13],
+        timezone: 'Australia/Sydney',
+      },
+      ITALY: {
+        name: 'Italy',
+        sources: [5],
+        timezone: 'Europe/Rome',
+      },
+      FARSI: {
+        name: 'Farsi',
+        sources: [12, -12],
+        timezone: 'Asia/Tehran',
+      },
+      DORSET_AREA: {
+        name: 'Dorset Area',
+        sources: [17],
+        timezone: 'Europe/Belfast',
+      },
+      PHONE: {
+        name: 'Phone',
+        sources: [3],
+        timezone: 'GMT',
+      },
+      INDIA: {
+        name: 'India',
+        sources: [11],
+        timezone: 'Asia/Kolkata',
+      },
+      PORTUGESE: {
+        name: 'Portugese',
+        sources: [7, 9],
+        timezone: 'Europe/Lisbon',
+      },
+      BRAZIL: {
+        name: 'Brazil',
+        sources: [9],
+        timezone: 'America/Sao_Paulo',
+      },
+      SOUTH_AMERICA: {
+        name: 'South America',
+        sources: [6],
+        timezone: 'America/Sao_Paulo',
+      },
+      US: {
+        name: 'USA',
+        sources: [15],
+        timezone: 'America/New_York',
+      },
+      RUSSIA: {
+        name: 'Russia',
+        sources: [8],
+        timezone: 'Europe/Moscow',
+      },
+      FRANCE: {
+        name: 'France',
+        sources: [-10],
+        timezone: 'Europe/Paris',
+      },
+    }
   },
   Colors: {
     DEFAULT: 0,

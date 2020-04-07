@@ -9,7 +9,7 @@ export default class CronStartedListener extends Listener {
         });
     }
 
-    exec(name, id) {
-        this.client.logger.info(`[CRON] Action: Started, Id: ${id}, Name: ${name}`);
+    exec(id) {
+        this.client.logger.info(`CronJob '${id}' started running`);
     }
 }

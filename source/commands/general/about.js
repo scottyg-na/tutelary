@@ -8,6 +8,7 @@ export default class AboutCommand extends Command {
   constructor() {
     super('about', {
       aliases: ['about', 'aboutme', 'stats', 'status'],
+      channel: 'text',
       description: { content: 'Displays my information.' },
     });
   }

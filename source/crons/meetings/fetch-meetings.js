@@ -5,19 +5,19 @@ import { getMeetingsFromVirtualNA } from 'util/meetings';
 import Constants from 'constants';
 import TutelaryClient from 'client';
 
-export default class FetchVirtualNACron extends CronModule {
+export default class FetchMeetingsCron extends CronModule {
   constructor() {
-    super('FetchVirtualNA', {});
+    super(Constants.Modules.CRON_FETCH_MEETINGS, {});
   }
 
   load(client: TutelaryClient) {
     const job = new CronOptions();
-    job.id = 'fetch-meetings-virtual-na';
+    job.id = `${Constants.Modules.CRON_FETCH_MEETINGS}-${Math.random().toString(36).slice(2)}`;
     job.cronTime = '0 0 */1 * * *';
     job.onTick = () => this.exec(job.id);
     job.onComplete = () => {};
     job.start = true;
-    job.timezone = 'GMT';
+    job.timezone = process.env.BOT_TIMEZONE;
     job.context = null;
     job.runOnInit = true;
 

@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import Constants from 'constants';
+import { Duration, DateTime } from 'luxon';
 
 const MEETINGS_API = 'https://bmlt.virtual-na.org/main_server/client_interface/json/';
 const MEETINGS_API_PARAMS = ['?switcher=GetSearchResults&data_field_key=duration_time,start_time,weekday_tinyint,service_body_bigint,',
@@ -74,3 +75,38 @@ export const getMeetingsFromVirtualNA = async () => {
 
   return meetings;
 };
+
+export const getDatesForTz = (start: DateTime, duration: Duration) => {
+  return {
+    start: start.toFormat('h:mma'),
+    end: start.plus(duration).toFormat('h:mma'),
+    offset: start.offsetNameShort,
+  };
+}
+
+export const getFields = (meetings: Array < object >, date: DateTime = DateTime.local()) => {
+  return meetings.map(m => {
+    const meeting = m.get();
+    const { offset } = date;
+
+    const [sh, sm] = meeting.start.split(':').map((t) => parseInt(t, 10));
+    const [dh, dm] = meeting.duration.split(':').map((t) => parseInt(t, 10));
+
+    const duration = Duration.fromObject({ hours: dh, minutes: dm });
+
+    const utc = date.set({ hour: sh, minute: sm });
+    const start = utc.plus({ minutes: offset });
+
+    const times = getDatesForTz(start, duration);
+
+    return {
+      name: `**${meeting.name}**`,
+      value: [
+        `_${times.start}-${times.end} ${date.offsetNameShort}_`,
+        '[Click here to join](' + meeting.location + ')',
+        `${(meeting.locationDescription ? `(${meeting.locationDescription})` : '')}`,
+        ` `,
+      ],
+    };
+  });
+}

@@ -16,13 +16,14 @@ export default class JustForTodayCommand extends Command {
     }
 
     ready() {
-        this.repository = this.client.db.Server;
+        this.db = this.client.db.ServerSettings;
     }
 
-    async exec(message) {
+    async exec(message: Message) {
         let date = DateTime.local();
-        const timezone = await this.repository.getTimezoneFromMessage(message);
-        date = date.setZone(timezone);
+        const timezone = this.db.getSettingForServer(message.guild.id, 'timezone');
+        console.log(timezone);
+        // date = date.setZone(timezone);
 
         const response = getEmbeddedMessage(getForDate(date));
         return message.channel.send(response);

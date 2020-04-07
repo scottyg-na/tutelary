@@ -7,7 +7,6 @@ import TutelaryError from 'models/TutelaryError';
 import Logger from 'util/logger';
 import CronHandler from 'modules/cron/handler';
 import { create } from 'database';
-import TutelaryServer from 'models/database/TutelaryServer';
 
 const db = create();
 
@@ -93,6 +92,7 @@ export default class TutelaryClient extends AkairoClient {
           inhibitor: this.handlers.inhibitor,
           listener: this.handlers.listener,
           cron: this.handlers.cron,
+          serverSettings: this.db.ServerSettings,
           process,
         });
 

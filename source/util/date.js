@@ -1,3 +1,15 @@
 import { DateTime } from 'luxon';
 
-export const getBotDateTime = (date: DateTime = DateTime.local()) => date.setZone(process.env.BOT_TIMEZONE);
+export const isValidTimezone = (tz) => {
+    if (!Intl || !Intl.DateTimeFormat().resolvedOptions().timeZone) {
+        throw 'Time zones are not available in this environment';
+    }
+
+    try {
+        Intl.DateTimeFormat(undefined, { timeZone: tz });
+        return true;
+    }
+    catch (ex) {
+        return false;
+    }
+}

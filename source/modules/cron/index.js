@@ -5,6 +5,7 @@ import Constants from 'constants';
 import CronOptions from 'models/CronOptions';
 
 export default class CronModule extends AkairoModule {
+
     jobs: Array<CronJob> = [];
 
     get(id) {
@@ -14,11 +15,26 @@ export default class CronModule extends AkairoModule {
     add({
       id, cronTime, onTick, onComplete, start, timezone, context, runOnInit,
     }: CronOptions) {
+
+      this.handler.emit(
+        Constants.Events.CRON_CREATED,
+        id,
+        cronTime,
+      );
+
       this.jobs.push({
         id,
         job: new CronJob(
           cronTime,
-          onTick,
+          async () => {
+            (typeof onTick === 'function')
+              await onTick()
+
+            this.handler.emit(
+              Constants.Events.CRON_FINISHED,
+              id,
+            );
+          },
           onComplete,
           start,
           timezone,
@@ -28,55 +44,44 @@ export default class CronModule extends AkairoModule {
       });
     }
 
-    ready() {
-      try {
-        this.handler.emit(
-          Constants.Events.CRON_CREATED,
-          this.options.name,
-          this.id,
-          this.options.time,
-        );
-
-        this.task = new CronJob(
-          this.options.time,
-          () => {
-            this.handler.emit(Constants.Events.CRON_STARTED, this.options.name, this.id);
-            this.exec();
-            this.handler.emit(Constants.Events.CRON_FINISHED, this.options.name, this.id);
-          },
-          () => { },
-          true,
-          process.env.BOT_TIMEZONE,
-          this,
-          false,
-        );
-
-        if (this.options.runOnInit === true) {
-          setTimeout(() => this.task.fireOnTick(), 2000);
-        }
-      } catch (e) {
-        this.client.logger.error(e);
-      }
-    }
-
     exec(id) {
-      this.client.logger.info(`Running cron ${id} from ${this.id}`);
+      this.handler.emit(
+        Constants.Events.CRON_RUNNING,
+        id,
+      );
     }
 
     start(id) {
       this.get(id).job.start();
+      this.handler.emit(
+        Constants.Events.CRON_STARTED,
+        id,
+      );
     }
 
     stop(id) {
       this.get(id).job.stop();
+      this.handler.emit(
+        Constants.Events.CRON_STOPPED,
+        id,
+      );
     }
 
     remove(id) {
       remove(this.jobs, (job) => job.id === id);
+      this.handler.emit(
+        Constants.Events.CRON_REMOVED,
+        id,
+      );
     }
 
     destroy(id) {
       this.stop(id);
       this.remove(id);
     }
+
+    destroyAll() {
+      this.jobs.forEach(job => this.destroy(job.id));
+    }
+
 }

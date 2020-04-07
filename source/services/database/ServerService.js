@@ -1,4 +1,4 @@
-import DatabaseService from 'services/database';
+import DatabaseService from 'services/database/DatabaseService';
 import { AkairoError } from 'discord-akairo';
 
 export default class ServerDatabaseService extends DatabaseService {

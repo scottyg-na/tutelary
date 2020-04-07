@@ -19,6 +19,6 @@ export default class CronHandler extends AkairoHandler {
       automateCategories,
     });
 
-    this.on('load', (mod) => mod.load());
+    this.on('load', (mod) => mod.load(client));
   }
 }
