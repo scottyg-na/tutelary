@@ -28,9 +28,9 @@ jobs:
           name: Create .env
           command: |
             echo "BOT_OWNERS=${BOT_OWNERS}
-              BOT_TIMEZONE=${BOT_TIMEZONE}
-              DISCORD_TOKEN=${DISCORD_TOKEN}
-              DISCORD_NICKNAME=${DISCORD_NICKNAME}"
+            BOT_TIMEZONE=${BOT_TIMEZONE}
+            DISCORD_TOKEN=${DISCORD_TOKEN}
+            DISCORD_NICKNAME=${DISCORD_NICKNAME}" > ~/project/.env
       - run:
           name: Build
           command: yarn build
