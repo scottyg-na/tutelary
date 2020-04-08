@@ -5,7 +5,7 @@
 .nodemon.js
 *.code-workspace
 .yarnrc.yml
-_old/
+old/
 
 # Created by https://www.gitignore.io/api/VisualStudioCode,Node,Windows,OSX,dotenv
 # Edit at https://www.gitignore.io/?templates=VisualStudioCode,Node,Windows,OSX,dotenv
