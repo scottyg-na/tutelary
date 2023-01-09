@@ -34,7 +34,7 @@
     "dotenv": "^8.2.0",
     "find-package-json": "^1.2.0",
     "lodash": "^4.17.15",
-    "luxon": "^1.22.2",
+    "luxon": "^1.28.1",
     "node-cache": "^5.1.0",
     "node-fetch": "^2.6.0",
     "reflect-metadata": "^0.1.13",
